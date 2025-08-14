@@ -11,6 +11,7 @@ const ctx = canvas.getContext('2d');
 
 function renderPage(num) {
   pageRendering = true;
+
   pdfDoc.getPage(num).then(page => {
     const viewport = page.getViewport({ scale });
     canvas.width = viewport.width;
