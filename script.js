@@ -14,8 +14,15 @@ function renderPage(num) {
 
   pdfDoc.getPage(num).then(page => {
     const viewport = page.getViewport({ scale });
+
     canvas.width = viewport.width;
     canvas.height = viewport.height;
+
+    // Очистка и белый фон
+    ctx.save();
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
 
     const renderContext = {
       canvasContext: ctx,
@@ -56,13 +63,8 @@ function onNextPage() {
   queueRenderPage(pageNum);
 }
 
-if (document.getElementById('prev-page')) {
-  document.getElementById('prev-page').addEventListener('click', onPrevPage);
-}
-
-if (document.getElementById('next-page')) {
-  document.getElementById('next-page').addEventListener('click', onNextPage);
-}
+document.getElementById('prev-page').addEventListener('click', onPrevPage);
+document.getElementById('next-page').addEventListener('click', onNextPage);
 
 pdfjsLib.getDocument(BOOK_URL).promise.then(pdfDoc_ => {
   pdfDoc = pdfDoc_;
