@@ -12,18 +12,18 @@ const ctx = canvas.getContext('2d');
 function renderPage(num) {
   pageRendering = true;
 
-  pdfDoc.getPage(num).then(function (page) {
-    const viewport = page.getViewport({ scale: scale });
+  pdfDoc.getPage(num).then((page) => {
+    const viewport = page.getViewport({ scale });
     canvas.height = viewport.height;
     canvas.width = viewport.width;
 
     const renderContext = {
       canvasContext: ctx,
-      viewport: viewport,
+      viewport,
     };
-    const renderTask = page.render(renderContext);
 
-    renderTask.promise.then(function () {
+    const renderTask = page.render(renderContext);
+    renderTask.promise.then(() => {
       pageRendering = false;
       document.getElementById('page-info').textContent = `${pageNum} / ${pdfDoc.numPages}`;
 
@@ -56,14 +56,23 @@ function onNextPage() {
 }
 
 // Слушатели кнопок
-document.getElementById('prev-page').addEventListener('click', onPrevPage);
-document.getElementById('next-page').addEventListener('click', onNextPage);
+if (document.getElementById('prev-page')) {
+  document.getElementById('prev-page').addEventListener('click', onPrevPage);
+}
 
-// Загрузка PDF
-pdfjsLib.getDocument(BOOK_URL).promise.then(function (pdfDoc_) {
-  pdfDoc = pdfDoc_;
+if (document.getElementById('next-page')) {
+  document.getElementById('next-page').addEventListener('click', onNextPage);
+}
+
+// Инициализация PDF-документа
+pdfjsLib.getDocument(BOOK_URL).promise.then((loadedPdfDoc) => {
+  pdfDoc = loadedPdfDoc;
   document.getElementById('page-info').textContent = `1 / ${pdfDoc.numPages}`;
   renderPage(pageNum);
-}).catch(function (error) {
-  console.error('Ошибка загрузки PDF:', error);
+}).catch((error) => {
+  console.error('Ошибка загрузки PDF-документа:', error);
+  const errorMessage = document.createElement('div');
+  errorMessage.textContent = 'Не удалось загрузить книгу. Проверьте путь к файлу.';
+  errorMessage.style.color = 'red';
+  document.body.appendChild(errorMessage);
 });
