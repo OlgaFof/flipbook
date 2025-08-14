@@ -2,30 +2,23 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Электронная книга — разворот</title>
-  <link rel="stylesheet" href="styles.css" />
-
-  <!-- PDF.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-  <script>
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
-  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Не гонясь за отражением</title>
+  <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
-  <div id="flipbook-container">
-    <!-- Область для двух канвасов -->
-    <div id="pdf-canvas-container"></div>
-
-    <!-- Панель управления -->
-    <div id="page-controls">
-      <button id="prev-page" aria-label="Предыдущие страницы">←</button>
-      <span id="page-info">1–2 / ?</span>
-      <button id="next-page" aria-label="Следующие страницы">→</button>
+  <div class="book-container">
+    <div id="flipbook">
+      <!-- Страницы подгружаются автоматически через JS -->
     </div>
   </div>
 
-  <!-- Подключение скрипта -->
+  <div class="nav-buttons">
+    <button id="prev">&#9664;</button>
+    <button id="next">&#9654;</button>
+  </div>
+
+  <script src="lib/turn.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
