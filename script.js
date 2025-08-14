@@ -4,7 +4,8 @@ let pdfDoc = null;
 let pageNum = 1;
 let pageRendering = false;
 let pageNumPending = null;
-const scale = 1.2; // Уменьшен масштаб для влезания страниц
+const pageWidth = 960; // 16:9 пропорции: ширина
+const pageHeight = 540; // 16:9 пропорции: высота
 
 const canvasLeft = document.createElement('canvas');
 const canvasRight = document.createElement('canvas');
@@ -29,16 +30,22 @@ function renderPagePair(startPage) {
 
   Promise.all(promises).then(pages => {
     pages.forEach((page, index) => {
-      const viewport = page.getViewport({ scale });
       const canvas = index === 0 ? canvasLeft : canvasRight;
       const ctx = index === 0 ? ctxLeft : ctxRight;
+      const scale = Math.min(pageWidth / page.view[2], pageHeight / page.view[3]);
+      const viewport = page.getViewport({ scale });
 
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
+      canvas.width = pageWidth;
+      canvas.height = pageHeight;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, pageWidth, pageHeight);
 
+      const offsetX = (pageWidth - viewport.width) / 2;
+      const offsetY = (pageHeight - viewport.height) / 2;
       const renderContext = {
         canvasContext: ctx,
-        viewport: viewport
+        viewport: viewport,
+        transform: [1, 0, 0, 1, offsetX, offsetY]
       };
 
       page.render(renderContext);
