@@ -1,29 +1,31 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Электронная книга</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Электронная книга — разворот</title>
+  <link rel="stylesheet" href="styles.css" />
 
   <!-- PDF.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
   <script>
-    // Обязательное указание пути к pdf.worker.min.js
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
   </script>
 </head>
 <body>
   <div id="flipbook-container">
-    <canvas id="pdf-canvas"></canvas>
+    <!-- Область для двух канвасов -->
+    <div id="pdf-canvas-container"></div>
+
+    <!-- Панель управления -->
     <div id="page-controls">
-      <button id="prev-page" aria-label="Предыдущая страница">←</button>
-      <span id="page-info">1 / 1</span>
-      <button id="next-page" aria-label="Следующая страница">→</button>
+      <button id="prev-page" aria-label="Предыдущие страницы">←</button>
+      <span id="page-info">1–2 / ?</span>
+      <button id="next-page" aria-label="Следующие страницы">→</button>
     </div>
   </div>
 
-  <!-- Скрипт отображения PDF -->
+  <!-- Подключение скрипта -->
   <script src="script.js"></script>
 </body>
 </html>
