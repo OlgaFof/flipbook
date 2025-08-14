@@ -1,71 +1,38 @@
-/* Основные стили страницы */
 body {
   margin: 0;
-  padding: 0;
-  background-color: #f4f4f4;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f8f3eb;
+  font-family: 'Georgia', serif;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: 100vh;
 }
 
-/* Контейнер всей книги */
-#flipbook-container {
-  background: #ffffff;
-  padding: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  text-align: center;
-  max-width: 100%;
-  overflow-x: auto;
+.book-container {
+  margin-top: 40px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
 }
 
-/* Контейнер для двух страниц */
-#pdf-canvas-container {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
+#flipbook {
+  width: 1200px;
+  height: 800px;
 }
 
-/* Каждая страница */
-#pdf-canvas-left,
-#pdf-canvas-right {
-  max-width: 48%;
-  height: auto;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+#flipbook .page {
+  background: white;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Панель управления */
-#page-controls {
-  margin-top: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
+.nav-buttons {
+  margin-top: 20px;
 }
 
-/* Кнопки */
-#page-controls button {
-  padding: 8px 16px;
-  font-size: 18px;
+.nav-buttons button {
+  background: #5c443a;
+  color: white;
   border: none;
-  border-radius: 6px;
-  background-color: #0077cc;
-  color: #fff;
+  padding: 10px 20px;
+  margin: 0 10px;
+  font-size: 18px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-#page-controls button:hover {
-  background-color: #005fa3;
-}
-
-#page-info {
-  font-weight: bold;
-  font-size: 16px;
-  color: #333;
 }
