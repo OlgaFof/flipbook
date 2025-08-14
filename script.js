@@ -1,58 +1,69 @@
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js';
-
 const BOOK_URL = 'assets/book1.pdf';
-const container = document.getElementById('flipbook');
-const loadingText = document.createElement('div');
-loadingText.style.color = 'white';
-loadingText.style.padding = '1rem';
-loadingText.innerText = 'Загрузка страницы...';
-container.appendChild(loadingText);
 
-const pageFlip = new St.PageFlip(container, {
-  width: 900,
-  height: 1273,
-  size: 'stretch',
-  showCover: false,
-  drawShadow: true,
-  flippingTime: 600,
-  useMouseEvents: true,
-  usePortrait: true,
-  autoSize: true
-});
+let pdfDoc = null;
+let pageNum = 1;
+let pageRendering = false;
+let pageNumPending = null;
+const scale = 1.5;
 
-async function loadBook() {
-  try {
-    const pdf = await pdfjsLib.getDocument(BOOK_URL).promise;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const scale = 1.5 * dpr;
-    const pages = [];
+const canvas = document.getElementById('pdf-canvas');
+const ctx = canvas.getContext('2d');
 
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const viewport = page.getViewport({ scale });
+function renderPage(num) {
+  pageRendering = true;
 
-      const canvas = document.createElement('canvas');
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-      const context = canvas.getContext('2d');
+  pdfDoc.getPage(num).then(function (page) {
+    const viewport = page.getViewport({ scale: scale });
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
 
-      await page.render({ canvasContext: context, viewport }).promise;
+    const renderContext = {
+      canvasContext: ctx,
+      viewport: viewport,
+    };
+    const renderTask = page.render(renderContext);
 
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-      pages.push(dataUrl);
-    }
+    renderTask.promise.then(function () {
+      pageRendering = false;
+      document.getElementById('page-info').textContent = `${pageNum} / ${pdfDoc.numPages}`;
 
-    pageFlip.loadFromImages(pages);
-    document.getElementById('prev').addEventListener('click', () => pageFlip.flipPrev());
-    document.getElementById('next').addEventListener('click', () => pageFlip.flipNext());
-    pageFlip.on('flip', e => {
-      document.getElementById('page').innerText = `${e.data + 1} / ${pageFlip.getPageCount()}`;
+      if (pageNumPending !== null) {
+        renderPage(pageNumPending);
+        pageNumPending = null;
+      }
     });
-    loadingText.remove();
-  } catch (err) {
-    container.innerHTML = `<div style="color:red;padding:1rem">Ошибка: ${err.message}</div>`;
-    console.error(err);
+  });
+}
+
+function queueRenderPage(num) {
+  if (pageRendering) {
+    pageNumPending = num;
+  } else {
+    renderPage(num);
   }
 }
 
-loadBook();
+function onPrevPage() {
+  if (pageNum <= 1) return;
+  pageNum--;
+  queueRenderPage(pageNum);
+}
+
+function onNextPage() {
+  if (pageNum >= pdfDoc.numPages) return;
+  pageNum++;
+  queueRenderPage(pageNum);
+}
+
+// Слушатели кнопок
+document.getElementById('prev-page').addEventListener('click', onPrevPage);
+document.getElementById('next-page').addEventListener('click', onNextPage);
+
+// Загрузка PDF
+pdfjsLib.getDocument(BOOK_URL).promise.then(function (pdfDoc_) {
+  pdfDoc = pdfDoc_;
+  document.getElementById('page-info').textContent = `1 / ${pdfDoc.numPages}`;
+  renderPage(pageNum);
+}).catch(function (error) {
+  console.error('Ошибка загрузки PDF:', error);
+});
