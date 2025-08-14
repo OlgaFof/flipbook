@@ -1,32 +1,60 @@
-* { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; font-family: Arial, sans-serif; }
+/* Общий стиль для страницы */
 body {
-  background: #111;
-  color: #eee;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
-}
-#app { width: min(95vw, 1200px); }
-.flipbook {
-  width: 100%;
-  height: min(85vh, calc(95vw * 1.41));
-  margin: 0 auto;
-}
-.controls {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
   align-items: center;
-  margin-top: 1rem;
+  justify-content: center;
+  min-height: 100vh;
 }
-button {
-  padding: .6rem 1rem;
-  border-radius: .75rem;
-  border: 1px solid #444;
-  background: #222;
-  color: #eee;
+
+/* Контейнер для книги */
+#flipbook-container {
+  background: #ffffff;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* Холст PDF */
+#pdf-canvas {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Панель навигации */
+#page-controls {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+/* Кнопки */
+#page-controls button {
+  padding: 8px 16px;
+  font-size: 18px;
+  border: none;
+  border-radius: 6px;
+  background-color: #0077cc;
+  color: #fff;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
-button:disabled { opacity: .5; cursor: default; }
+
+#page-controls button:hover {
+  background-color: #005fa3;
+}
+
+#page-info {
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+}
