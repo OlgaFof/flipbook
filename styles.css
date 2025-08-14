@@ -1,34 +1,45 @@
-/* Общий стиль для страницы */
+/* Основные стили страницы */
 body {
   margin: 0;
   padding: 0;
   background-color: #f4f4f4;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
 }
 
-/* Контейнер для книги */
+/* Контейнер всей книги */
 #flipbook-container {
   background: #ffffff;
   padding: 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
   text-align: center;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
-/* Холст PDF */
-#pdf-canvas {
-  max-width: 100%;
+/* Контейнер для двух страниц */
+#pdf-canvas-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Каждая страница */
+#pdf-canvas-left,
+#pdf-canvas-right {
+  max-width: 48%;
   height: auto;
   border: 1px solid #ccc;
   border-radius: 4px;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
 }
 
-/* Панель навигации */
+/* Панель управления */
 #page-controls {
   margin-top: 16px;
   display: flex;
