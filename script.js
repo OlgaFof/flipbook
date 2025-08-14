@@ -12,13 +12,16 @@ const ctx = canvas.getContext('2d');
 function renderPage(num) {
   pageRendering = true;
   pdfDoc.getPage(num).then(page => {
-    const viewport = page.getViewport({ scale });
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
+    const originalViewport = page.getViewport({ scale });
+    const rotatedViewport = originalViewport.clone({
+      rotation: (originalViewport.rotation + 90) % 360
+    });
+    canvas.width = rotatedViewport.width;
+    canvas.height = rotatedViewport.height;
 
     const renderContext = {
       canvasContext: ctx,
-      viewport: viewport
+      viewport: rotatedViewport
     };
 
     const renderTask = page.render(renderContext);
