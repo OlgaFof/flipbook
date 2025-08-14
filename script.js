@@ -4,58 +4,77 @@ let pdfDoc = null;
 let pageNum = 1;
 let pageRendering = false;
 let pageNumPending = null;
-const scale = 1.5;
+const scale = 1.2; // Уменьшен масштаб для влезания страниц
 
-const canvas = document.getElementById('pdf-canvas');
-const ctx = canvas.getContext('2d');
+const canvasLeft = document.createElement('canvas');
+const canvasRight = document.createElement('canvas');
+canvasLeft.id = 'pdf-canvas-left';
+canvasRight.id = 'pdf-canvas-right';
 
-function renderPage(num) {
+const container = document.getElementById('pdf-canvas-container');
+container.innerHTML = '';
+container.appendChild(canvasLeft);
+container.appendChild(canvasRight);
+
+const ctxLeft = canvasLeft.getContext('2d');
+const ctxRight = canvasRight.getContext('2d');
+
+function renderPagePair(startPage) {
   pageRendering = true;
+  const promises = [pdfDoc.getPage(startPage)];
 
-  pdfDoc.getPage(num).then((page) => {
-    const viewport = page.getViewport({ scale });
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
+  if (startPage + 1 <= pdfDoc.numPages) {
+    promises.push(pdfDoc.getPage(startPage + 1));
+  }
 
-    const renderContext = {
-      canvasContext: ctx,
-      viewport,
-    };
+  Promise.all(promises).then(pages => {
+    pages.forEach((page, index) => {
+      const viewport = page.getViewport({ scale });
+      const canvas = index === 0 ? canvasLeft : canvasRight;
+      const ctx = index === 0 ? ctxLeft : ctxRight;
 
-    const renderTask = page.render(renderContext);
-    renderTask.promise.then(() => {
-      pageRendering = false;
-      document.getElementById('page-info').textContent = `${pageNum} / ${pdfDoc.numPages}`;
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
 
-      if (pageNumPending !== null) {
-        renderPage(pageNumPending);
-        pageNumPending = null;
-      }
+      const renderContext = {
+        canvasContext: ctx,
+        viewport: viewport
+      };
+
+      page.render(renderContext);
     });
+
+    pageRendering = false;
+    document.getElementById('page-info').textContent = `${startPage}–${Math.min(startPage + 1, pdfDoc.numPages)} / ${pdfDoc.numPages}`;
+
+    if (pageNumPending !== null) {
+      renderPagePair(pageNumPending);
+      pageNumPending = null;
+    }
   });
 }
 
-function queueRenderPage(num) {
+function queueRenderPagePair(num) {
   if (pageRendering) {
     pageNumPending = num;
   } else {
-    renderPage(num);
+    renderPagePair(num);
   }
 }
 
 function onPrevPage() {
-  if (pageNum <= 1) return;
-  pageNum--;
-  queueRenderPage(pageNum);
+  if (pageNum <= 2) return;
+  pageNum -= 2;
+  queueRenderPagePair(pageNum);
 }
 
 function onNextPage() {
-  if (pageNum >= pdfDoc.numPages) return;
-  pageNum++;
-  queueRenderPage(pageNum);
+  if (pageNum + 1 >= pdfDoc.numPages) return;
+  pageNum += 2;
+  queueRenderPagePair(pageNum);
 }
 
-// Слушатели кнопок
+// Кнопки
 if (document.getElementById('prev-page')) {
   document.getElementById('prev-page').addEventListener('click', onPrevPage);
 }
@@ -64,13 +83,13 @@ if (document.getElementById('next-page')) {
   document.getElementById('next-page').addEventListener('click', onNextPage);
 }
 
-// Инициализация PDF-документа
-pdfjsLib.getDocument(BOOK_URL).promise.then((loadedPdfDoc) => {
-  pdfDoc = loadedPdfDoc;
-  document.getElementById('page-info').textContent = `1 / ${pdfDoc.numPages}`;
-  renderPage(pageNum);
-}).catch((error) => {
-  console.error('Ошибка загрузки PDF-документа:', error);
+// Загрузка PDF
+pdfjsLib.getDocument(BOOK_URL).promise.then(pdfDoc_ => {
+  pdfDoc = pdfDoc_;
+  pageNum = 1;
+  renderPagePair(pageNum);
+}).catch(error => {
+  console.error('Ошибка загрузки PDF:', error);
   const errorMessage = document.createElement('div');
   errorMessage.textContent = 'Не удалось загрузить книгу. Проверьте путь к файлу.';
   errorMessage.style.color = 'red';
